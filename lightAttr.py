@@ -1,46 +1,51 @@
 import maya.cmds as cmds
 import common.yaml as yaml
 
-lights = cmds.ls(type='light')
 
-lig_dict = {}
+class LightAttr():
+    def __init__(self, parent=None):
+        super(LightAttr,self).__init__()
 
-for lig in lights:
-    attr_list = cmds.listAttr(lig)
-    attr_dict = {}
-    for a in attr_list:
-        attr_node = '%s.%s' % (lig, a)
+    def getLightAttr(self):
+        lights = cmds.ls(type='light')
 
-        try:
-            attr = cmds.getAttr('%s' % attr_node)
-        except RuntimeError:
-            attr = None
-        except ValueError:
-            pass
+        self.lig_dict = {}
 
-        attr_dict[a] = attr
+        for lig in lights:
+            attr_list = cmds.listAttr(lig)
+            attr_dict = {}
+            for a in attr_list:
+                attr_node = '%s.%s' % (lig, a)
 
-    lig_dict[lig] = attr_dict
+                try:
+                    attr = cmds.getAttr('%s' % attr_node)
+                except RuntimeError or ValueError:
+                    attr = None
 
-yamlFile = '/Users/macintosh/Library/Preferences/Autodesk/maya/2017/ligAttrivute.yaml'
+                attr_dict[a] = attr
 
-stream = file(yamlFile, 'w')
-yaml.dump(lig_dict, stream, default_flow_style=False)
+            self.lig_dict[lig] = attr_dict
 
-stream = file(yamlFile, 'r')
-doc = yaml.load(stream)
+    def dump_attr(self):
+        yamlFile = '/Users/macintosh/Library/Preferences/Autodesk/maya/2017/ligAttribute.yaml'
 
-lights = cmds.ls(type='light')
+        stream = file(yamlFile, 'w')
+        yaml.dump(self.lig_dict, stream, default_flow_style=False)
 
-for lig in lights:
-    for a in doc[lig]:
-        attr = '%s.%s' % (lig, a)
-        print
-        attr, doc[lig][a]
-        try:
-            cmds.setAttr(attr, doc[lig][att])
-        except Exception:
-            pass
+    def load_attr(self):
+        stream = file(yamlFile, 'r')
+        self.doc = yaml.load(stream)
+
+    def setLightAttr(self):
+        lights = cmds.ls(type='light')
+
+        for lig in lights:
+            for a in self.doc[lig]:
+                attr = '%s.%s' % (lig, a)
+                try:
+                    cmds.setAttr(attr, self.doc[lig][att])
+                except Exception:
+                    pass
 
 
 
