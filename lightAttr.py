@@ -2,7 +2,7 @@ import maya.cmds as cmds
 import common.yaml as yaml
 
 yamlFile = '/Users/macintosh/Library/Preferences/Autodesk/maya/2017/ligAttribute.yaml'
-
+#test
 class LightAttr():
     def __init__(self):
         if cmds.window('lightTransfer', exists=True):
